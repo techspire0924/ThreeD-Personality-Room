@@ -74,36 +74,34 @@ export default function MoodQuiz() {
     }
 
     return (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
-            <div className="bg-black/90 backdrop-blur-md rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-semibold text-white">
-                        Question {currentQuestion + 1} of {questions.length}
-                    </h3>
+        <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold text-white">
+                    Question {currentQuestion + 1} of {questions.length}
+                </h3>
+                <button
+                    onClick={handleClose}
+                    className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                    aria-label="Close quiz"
+                >
+                    ✕
+                </button>
+            </div>
+
+            <p className="text-lg text-gray-200 mb-4">
+                {questions[currentQuestion].text}
+            </p>
+
+            <div className="space-y-3">
+                {questions[currentQuestion].options.map((option, i) => (
                     <button
-                        onClick={handleClose}
-                        className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                        aria-label="Close quiz"
+                        key={i}
+                        onClick={() => handleAnswer(option.mood)}
+                        className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                        ✕
+                        {option.label}
                     </button>
-                </div>
-
-                <p className="text-lg text-gray-200 mb-6">
-                    {questions[currentQuestion].text}
-                </p>
-
-                <div className="space-y-3">
-                    {questions[currentQuestion].options.map((option, i) => (
-                        <button
-                            key={i}
-                            onClick={() => handleAnswer(option.mood)}
-                            className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            {option.label}
-                        </button>
-                    ))}
-                </div>
+                ))}
             </div>
         </div>
     )
