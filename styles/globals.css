@@ -40,6 +40,24 @@
             animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;
         }
+
+        /* Show static fallback instead of 3D scene */
+        .reduced-motion-fallback {
+            display: block !important;
+        }
+
+        canvas {
+            display: none !important;
+        }
+    }
+
+    /* Manual reduced motion toggle */
+    .reduced-motion .reduced-motion-fallback {
+        display: block !important;
+    }
+
+    .reduced-motion canvas {
+        display: none !important;
     }
 
     /* Confetti animation */

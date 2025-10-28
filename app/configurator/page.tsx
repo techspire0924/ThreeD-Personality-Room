@@ -1,7 +1,8 @@
 /**
- * Main 3D configurator view with 2-column responsive layout.
+ * Main 3D configurator view with 2-column responsive layout and reduced-motion support.
  * Thought Logic: Server component orchestrates SceneCanvas (client) and UI panels. 
  * Split view: 3D scene left, controls right. Responsive to stack on mobile.
+ * Reduced-motion mode shows static image instead of live 3D.
  */
 import { Suspense } from 'react'
 import dynamic from 'next/dynamic'
@@ -13,6 +14,19 @@ const Room = dynamic(() => import('@/features/room/Room'), {
     ssr: false,
     loading: () => null,
 })
+
+// Static fallback for reduced motion
+function StaticRoomFallback() {
+    return (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-950">
+            <div className="text-center text-white">
+                <div className="text-6xl mb-4">🏠</div>
+                <p className="text-lg">Your mood room</p>
+                <p className="text-sm text-gray-400">Reduced motion mode</p>
+            </div>
+        </div>
+    )
+}
 
 export default function ConfiguratorPage() {
     return (
@@ -31,6 +45,10 @@ export default function ConfiguratorPage() {
                             <Room />
                         </SceneCanvas>
                     </Suspense>
+                    {/* Reduced motion fallback */}
+                    <div className="reduced-motion-fallback hidden">
+                        <StaticRoomFallback />
+                    </div>
                 </div>
 
                 {/* Right: UI Controls */}

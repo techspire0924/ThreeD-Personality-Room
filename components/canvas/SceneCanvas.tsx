@@ -24,7 +24,7 @@ export default function SceneCanvas({ children }: SceneCanvasProps) {
 
     return (
         <Canvas
-            camera={{ position: [5, 5, 5], fov: 50 }}
+            camera={{ position: [0, 1.6, 3], fov: 60 }}
             gl={{ antialias: true, alpha: true }}
             dpr={devicePixelRatio}
             performance={{ min: 0.8 }}
@@ -47,27 +47,22 @@ export default function SceneCanvas({ children }: SceneCanvasProps) {
                 shadow-mapSize-height={2048}
             />
 
-            {/* Placeholder rounded box at origin */}
-            <RoundedBox
-                args={[1, 1, 1]}
-                radius={0.2}
-                smoothness={4}
-                position={[0, 0.5, 0]}
-            >
-                <meshStandardMaterial color="#a0a0a0" roughness={0.5} metalness={0.1} />
-            </RoundedBox>
-
             {/* Consumer-provided content (e.g., <Room />) */}
             {children}
 
             <OrbitControls
-                enablePan={true}
+                enablePan={false}
                 enableZoom={true}
                 enableRotate={true}
-                minDistance={3}
-                maxDistance={20}
-                minPolarAngle={0}
-                maxPolarAngle={Math.PI / 2}
+                minDistance={2}
+                maxDistance={8}
+                minPolarAngle={Math.PI / 4}
+                maxPolarAngle={Math.PI / 1.5}
+                target={[0, 1.6, 0]}
+                dampingFactor={0.05}
+                enableDamping={true}
+                rotateSpeed={0.5}
+                zoomSpeed={0.8}
             />
 
             <Environment preset="city" />
