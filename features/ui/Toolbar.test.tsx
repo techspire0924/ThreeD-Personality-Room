@@ -13,40 +13,59 @@ vi.mock('../mood/useMoodStore', () => ({
 }))
 
 describe('Toolbar', () => {
-    const mockSetMood = vi.fn()
+    const mockSetVibe = vi.fn()
+    const mockSetIntensity = vi.fn()
     const mockOpenQuiz = vi.fn()
 
     beforeEach(() => {
         vi.clearAllMocks()
             ; (useMoodStore as any).mockReturnValue({
-                currentMood: { id: 'serene', label: 'Serene' },
-                setMood: mockSetMood,
+                vibe: 'Calm',
+                intensity: 0.5,
+                palette: {
+                    primary: '#7DD3C0',
+                    accent: '#FF6B6B',
+                    bg: '#1a1a1a',
+                },
+                setVibe: mockSetVibe,
+                setIntensity: mockSetIntensity,
                 openQuiz: mockOpenQuiz,
             })
     })
 
-    it('should render mood preset buttons', () => {
+    it('should render vibe buttons', () => {
         render(<Toolbar />)
 
-        expect(screen.getByText('Serene')).toBeInTheDocument()
-        expect(screen.getByText('Energetic')).toBeInTheDocument()
-        expect(screen.getByText('Focused')).toBeInTheDocument()
+        expect(screen.getByText('Calm')).toBeInTheDocument()
+        expect(screen.getByText('Chaotic')).toBeInTheDocument()
+        expect(screen.getByText('Dreamy')).toBeInTheDocument()
+        expect(screen.getByText('Cyber')).toBeInTheDocument()
+        expect(screen.getByText('Cozy')).toBeInTheDocument()
     })
 
-    it('should call setMood when a preset button is clicked', () => {
+    it('should call setVibe when a vibe button is clicked', () => {
         render(<Toolbar />)
 
-        const energeticButton = screen.getByText('Energetic')
-        fireEvent.click(energeticButton)
+        const chaoticButton = screen.getByText('Chaotic')
+        fireEvent.click(chaoticButton)
 
-        expect(mockSetMood).toHaveBeenCalled()
+        expect(mockSetVibe).toHaveBeenCalledWith('Chaotic')
     })
 
-    it('should highlight the current mood', () => {
+    it('should highlight the current vibe', () => {
         render(<Toolbar />)
 
-        const sereneButton = screen.getByRole('button', { name: 'Switch to Serene mood' })
-        expect(sereneButton).toHaveClass('bg-blue-600')
+        const calmButton = screen.getByRole('button', { name: 'Switch to Calm vibe' })
+        expect(calmButton).toHaveClass('bg-blue-600')
+    })
+
+    it('should call setIntensity when slider is changed', () => {
+        render(<Toolbar />)
+
+        const slider = screen.getByRole('slider')
+        fireEvent.change(slider, { target: { value: '0.8' } })
+
+        expect(mockSetIntensity).toHaveBeenCalledWith(0.8)
     })
 
     it('should call openQuiz when quiz button is clicked', () => {
@@ -58,11 +77,29 @@ describe('Toolbar', () => {
         expect(mockOpenQuiz).toHaveBeenCalled()
     })
 
+    it('should display current intensity percentage', () => {
+        ; (useMoodStore as any).mockReturnValue({
+            vibe: 'Calm',
+            intensity: 0.7,
+            palette: {
+                primary: '#7DD3C0',
+                accent: '#FF6B6B',
+                bg: '#1a1a1a',
+            },
+            setVibe: mockSetVibe,
+            setIntensity: mockSetIntensity,
+            openQuiz: mockOpenQuiz,
+        })
+
+        render(<Toolbar />)
+
+        expect(screen.getByText('Intensity: 70%')).toBeInTheDocument()
+    })
+
     it('should have proper ARIA labels', () => {
         render(<Toolbar />)
 
-        expect(screen.getByRole('button', { name: 'Switch to Serene mood' })).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: 'Switch to Calm vibe' })).toBeInTheDocument()
         expect(screen.getByRole('button', { name: 'Take mood quiz' })).toBeInTheDocument()
     })
 })
-

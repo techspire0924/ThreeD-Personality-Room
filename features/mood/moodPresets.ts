@@ -1,66 +1,77 @@
 /**
- * Predefined mood configurations with colors, lighting, and atmosphere.
- * Thought Logic: Centralize aesthetic presets for quick mood switching and consistency.
+ * Curated mood presets with hex colors and defaults.
+ * Thought Logic: Centralize aesthetic presets for quick mood switching; exports pickPreset helper
+ * to map vibes to palette/music combinations.
  */
+import type { Vibe, Music, Palette } from './useMoodStore'
+
 export interface MoodPreset {
-    id: string
-    label: string
-    description: string
-    color: string
+    vibe: Vibe
+    palette: Palette
+    music: Music
     lightIntensity: number
-    fogColor: string
-    fogDensity: number
+    lightTint: string
 }
 
-export const moodPresets: MoodPreset[] = [
-    {
-        id: 'serene',
-        label: 'Serene',
-        description: 'Calm and peaceful atmosphere',
-        color: '#7DD3C0',
-        lightIntensity: 0.8,
-        fogColor: '#E8F4F2',
-        fogDensity: 0.05,
-    },
-    {
-        id: 'energetic',
-        label: 'Energetic',
-        description: 'Vibrant and dynamic energy',
-        color: '#FF6B6B',
-        lightIntensity: 1.2,
-        fogColor: '#FFF0F0',
-        fogDensity: 0.08,
-    },
-    {
-        id: 'focused',
-        label: 'Focused',
-        description: 'Clear and concentrated mindset',
-        color: '#4ECDC4',
-        lightIntensity: 1.0,
-        fogColor: '#E6F7F5',
-        fogDensity: 0.06,
-    },
-    {
-        id: 'cozy',
-        label: 'Cozy',
-        description: 'Warm and comfortable feeling',
-        color: '#FFA07A',
+export const moodPresets: Record<Vibe, MoodPreset> = {
+    Calm: {
+        vibe: 'Calm',
+        palette: {
+            primary: '#A8D5BA',
+            accent: '#5B8E9D',
+            bg: '#F5F8F7',
+        },
+        music: 'nature',
         lightIntensity: 0.6,
-        fogColor: '#FFF5E6',
-        fogDensity: 0.04,
+        lightTint: '#E8F4F0',
     },
-    {
-        id: 'creative',
-        label: 'Creative',
-        description: 'Inspirational and expressive space',
-        color: '#9B59B6',
-        lightIntensity: 0.9,
-        fogColor: '#F4E8FF',
-        fogDensity: 0.07,
+    Chaotic: {
+        vibe: 'Chaotic',
+        palette: {
+            primary: '#FF6B9D',
+            accent: '#FF1744',
+            bg: '#1A0B0F',
+        },
+        music: 'synthwave',
+        lightIntensity: 1.2,
+        lightTint: '#FFF0F0',
     },
-]
+    Dreamy: {
+        vibe: 'Dreamy',
+        palette: {
+            primary: '#C8A2C8',
+            accent: '#9370DB',
+            bg: '#2D1B3D',
+        },
+        music: 'lofi',
+        lightIntensity: 0.8,
+        lightTint: '#F4E8FF',
+    },
+    Cyber: {
+        vibe: 'Cyber',
+        palette: {
+            primary: '#00FFFF',
+            accent: '#00E5FF',
+            bg: '#001122',
+        },
+        music: 'synthwave',
+        lightIntensity: 1.1,
+        lightTint: '#E0FFFF',
+    },
+    Cozy: {
+        vibe: 'Cozy',
+        palette: {
+            primary: '#FFB347',
+            accent: '#FF8C42',
+            bg: '#2C1810',
+        },
+        music: 'lofi',
+        lightIntensity: 0.7,
+        lightTint: '#FFF5E6',
+    },
+}
 
-export function getMoodPresetById(id: string): MoodPreset | undefined {
-    return moodPresets.find((preset) => preset.id === id)
+export function pickPreset(vibe: Vibe): MoodPreset {
+    return moodPresets[vibe]
 }
 

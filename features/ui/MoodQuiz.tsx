@@ -1,17 +1,16 @@
 /**
  * Interactive quiz for discovering personalized mood.
- * Thought Logic: Guide users through questions to derive ideal mood preset; close on complete.
+ * Thought Logic: Guide users through questions to derive ideal mood vibe; close on complete.
  */
 'use client'
 
-import { useMoodStore } from '../mood/useMoodStore'
-import { moodPresets, type MoodPreset } from '../mood/moodPresets'
+import { useMoodStore, type Vibe } from '../mood/useMoodStore'
 import { useState } from 'react'
 
 interface Question {
     id: string
     text: string
-    options: Array<{ label: string; mood: string }>
+    options: Array<{ label: string; vibe: Vibe }>
 }
 
 const questions: Question[] = [
@@ -19,48 +18,54 @@ const questions: Question[] = [
         id: 'energy',
         text: 'How is your energy level today?',
         options: [
-            { label: 'High and ready to go', mood: 'energetic' },
-            { label: 'Calm and steady', mood: 'serene' },
-            { label: 'Needs a boost', mood: 'creative' },
+            { label: 'High and ready to go', vibe: 'Chaotic' },
+            { label: 'Calm and steady', vibe: 'Calm' },
+            { label: 'Needs a boost', vibe: 'Cyber' },
         ],
     },
     {
         id: 'focus',
         text: 'What do you want to accomplish?',
         options: [
-            { label: 'Deep concentration', mood: 'focused' },
-            { label: 'Relax and unwind', mood: 'cozy' },
-            { label: 'Explore new ideas', mood: 'creative' },
+            { label: 'Deep concentration', vibe: 'Cyber' },
+            { label: 'Relax and unwind', vibe: 'Cozy' },
+            { label: 'Explore new ideas', vibe: 'Dreamy' },
         ],
     },
 ]
 
 export default function MoodQuiz() {
-    const { isQuizActive, closeQuiz, setMood } = useMoodStore()
+    const { isQuizActive, closeQuiz, setVibe } = useMoodStore()
     const [currentQuestion, setCurrentQuestion] = useState(0)
-    const [answers, setAnswers] = useState<Record<string, string>>({})
+    const [answers, setAnswers] = useState<Record<string, Vibe>>({})
 
     if (!isQuizActive) return null
 
-    const handleAnswer = (mood: string) => {
+    const handleAnswer = (vibe: Vibe) => {
         const question = questions[currentQuestion]
-        const newAnswers = { ...answers, [question.id]: mood }
+        const newAnswers = { ...answers, [question.id]: vibe }
         setAnswers(newAnswers)
 
         if (currentQuestion < questions.length - 1) {
             setCurrentQuestion(currentQuestion + 1)
         } else {
             // Calculate result (simple majority vote)
-            const moodCounts: Record<string, number> = {}
-            Object.values(newAnswers).forEach((m) => {
-                moodCounts[m] = (moodCounts[m] || 0) + 1
-            })
-            const resultMood =
-                Object.entries(moodCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ||
-                'serene'
+            const vibeCounts: Record<Vibe, number> = {
+                Calm: 0,
+                Chaotic: 0,
+                Dreamy: 0,
+                Cyber: 0,
+                Cozy: 0,
+            }
 
-            const preset = moodPresets.find((p) => p.id === resultMood)
-            if (preset) setMood(preset)
+            Object.values(newAnswers).forEach((v) => {
+                vibeCounts[v]++
+            })
+
+            const resultVibe = Object.entries(vibeCounts)
+                .sort((a, b) => b[1] - a[1])[0]?.[0] as Vibe || 'Calm'
+
+            setVibe(resultVibe)
             closeQuiz()
             setCurrentQuestion(0)
             setAnswers({})
@@ -96,7 +101,7 @@ export default function MoodQuiz() {
                 {questions[currentQuestion].options.map((option, i) => (
                     <button
                         key={i}
-                        onClick={() => handleAnswer(option.mood)}
+                        onClick={() => handleAnswer(option.vibe)}
                         className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         {option.label}

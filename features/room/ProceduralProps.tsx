@@ -1,43 +1,77 @@
 /**
- * Procedurally generated room objects that respond to mood state.
- * Thought Logic: Abstract decoration logic; generates varied arrangements per mood without runtime allocation.
+ * Procedurally generated room objects with subtle animations by vibe.
+ * Thought Logic: Low-poly props (spheres/cylinders) with motion variance per mood;
+ * uses frame loop for lightweight animations. Respects reduced motion.
  */
 'use client'
 
-import { useMemo } from 'react'
-import { useMoodStore } from '../mood/useMoodStore'
+import { useMemo, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
+import { useMoodStore, type Vibe } from '../mood/useMoodStore'
+
+const vibeAnimations: Record<Vibe, { speed: number; amplitude: number; rotationSpeed: number }> = {
+    Calm: { speed: 0.5, amplitude: 0.1, rotationSpeed: 0.3 },
+    Chaotic: { speed: 2.0, amplitude: 0.3, rotationSpeed: 1.5 },
+    Dreamy: { speed: 0.8, amplitude: 0.2, rotationSpeed: 0.5 },
+    Cyber: { speed: 1.5, amplitude: 0.15, rotationSpeed: 2.0 },
+    Cozy: { speed: 0.6, amplitude: 0.1, rotationSpeed: 0.4 },
+}
 
 export default function ProceduralProps() {
-    const { currentMood } = useMoodStore()
+    const { vibe, palette } = useMoodStore()
+    const propsRef = useRef<THREE.Group>(null)
+
+    const animConfig = vibeAnimations[vibe]
 
     const props = useMemo(() => {
-        const count = 5
-        return Array.from({ length: count }, (_, i) => ({
-            position: [
-                -4 + (i * 2) + Math.random() * 0.5,
-                0.5,
-                -3 + Math.random() * 0.5,
-            ] as [number, number, number],
-            scale: 0.3 + Math.random() * 0.4,
-            rotation: Math.random() * Math.PI * 2,
-        }))
-    }, [currentMood.id])
+        return [
+            // Plant - sphere
+            { type: 'sphere' as const, pos: [-2, 0.5, -2] as [number, number, number], size: 0.4, id: 0 },
+            // Lamp - cylinder
+            { type: 'cylinder' as const, pos: [2, 1, -2] as [number, number, number], size: [0.3, 0.3, 1] as [number, number, number], id: 1 },
+            // Table - small box
+            { type: 'box' as const, pos: [0, 0.3, -1] as [number, number, number], size: [1, 0.3, 1] as [number, number, number], id: 2 },
+        ]
+    }, [vibe])
+
+    useFrame(({ clock }) => {
+        if (propsRef.current) {
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            if (!prefersReducedMotion) {
+                propsRef.current.children.forEach((child, i) => {
+                    const mesh = child as THREE.Mesh
+                    const time = clock.elapsedTime
+                    const config = animConfig
+
+                    // Floating animation based on vibe
+                    mesh.position.y = props[i].pos[1] + Math.sin(time * config.speed) * config.amplitude
+
+                    // Rotation animation
+                    mesh.rotation.y = time * config.rotationSpeed
+                })
+            }
+        }
+    })
 
     return (
-        <group>
-            {props.map((prop, i) => (
+        <group ref={propsRef}>
+            {props.map((prop) => (
                 <mesh
-                    key={i}
-                    position={prop.position}
-                    scale={prop.scale}
-                    rotation={[0, prop.rotation, 0]}
+                    key={prop.id}
+                    position={prop.pos}
                     castShadow
                 >
-                    <boxGeometry args={[0.5, 1, 0.5]} />
+                    {prop.type === 'sphere' && <sphereGeometry args={[prop.size as number, 8, 6]} />}
+                    {prop.type === 'cylinder' && (
+                        <cylinderGeometry args={[prop.size[0], prop.size[1], prop.size[2], 8]} />
+                    )}
+                    {prop.type === 'box' && <boxGeometry args={prop.size as [number, number, number]} />}
                     <meshStandardMaterial
-                        color={currentMood.color}
-                        emissive={currentMood.color}
+                        color={palette.accent}
+                        emissive={palette.accent}
                         emissiveIntensity={0.2}
+                        roughness={0.7}
+                        metalness={0.1}
                     />
                 </mesh>
             ))}

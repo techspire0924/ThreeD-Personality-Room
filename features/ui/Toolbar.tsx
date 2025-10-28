@@ -1,14 +1,21 @@
 /**
- * Mood selection toolbar with preset buttons.
- * Thought Logic: Quick-switch UI for mood presets; surfaces store actions with keyboard support.
+ * Mood selection toolbar with vibe controls.
+ * Thought Logic: Quick-switch UI for mood vibes; surfaces store actions with keyboard support.
  */
 'use client'
 
-import { useMoodStore } from '../mood/useMoodStore'
-import { moodPresets } from '../mood/moodPresets'
+import { useMoodStore, type Vibe } from '../mood/useMoodStore'
+
+const vibeOptions: Array<{ value: Vibe; label: string; color: string }> = [
+    { value: 'Calm', label: 'Calm', color: '#7DD3C0' },
+    { value: 'Chaotic', label: 'Chaotic', color: '#FF6B6B' },
+    { value: 'Dreamy', label: 'Dreamy', color: '#9B59B6' },
+    { value: 'Cyber', label: 'Cyber', color: '#00FFFF' },
+    { value: 'Cozy', label: 'Cozy', color: '#FFA07A' },
+]
 
 export default function Toolbar() {
-    const { currentMood, setMood, openQuiz } = useMoodStore()
+    const { vibe, intensity, palette, setVibe, setIntensity, openQuiz } = useMoodStore()
 
     return (
         <div className="flex flex-col gap-4">
@@ -18,32 +25,47 @@ export default function Toolbar() {
                     <div className="flex items-center gap-3">
                         <div
                             className="w-8 h-8 rounded-full"
-                            style={{ backgroundColor: currentMood.color }}
+                            style={{ backgroundColor: palette.primary }}
                         />
                         <div>
-                            <p className="text-white font-medium">{currentMood.label}</p>
-                            <p className="text-sm text-gray-400">{currentMood.description}</p>
+                            <p className="text-white font-medium">{vibe}</p>
+                            <p className="text-sm text-gray-400">Intensity: {Math.round(intensity * 100)}%</p>
                         </div>
                     </div>
                 </div>
 
                 <h3 className="text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wide">
-                    Presets
+                    Vibes
                 </h3>
                 <div className="flex flex-col gap-2">
-                    {moodPresets.map((preset) => (
+                    {vibeOptions.map((option) => (
                         <button
-                            key={preset.id}
-                            onClick={() => setMood(preset)}
-                            className={`px-4 py-2.5 text-sm rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${currentMood.id === preset.id
+                            key={option.value}
+                            onClick={() => setVibe(option.value)}
+                            className={`px-4 py-2.5 text-sm rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${vibe === option.value
                                     ? 'bg-blue-600 text-white'
                                     : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                                 }`}
-                            aria-label={`Switch to ${preset.label} mood`}
+                            aria-label={`Switch to ${option.label} vibe`}
                         >
-                            {preset.label}
+                            {option.label}
                         </button>
                     ))}
+                </div>
+
+                <div className="mt-4">
+                    <label className="block text-sm font-semibold text-gray-300 mb-2">
+                        Intensity
+                    </label>
+                    <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value={intensity}
+                        onChange={(e) => setIntensity(parseFloat(e.target.value))}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    />
                 </div>
             </div>
 
@@ -57,4 +79,3 @@ export default function Toolbar() {
         </div>
     )
 }
-
