@@ -25,7 +25,9 @@ export default function Room() {
     // Gentle camera auto-rotate when idle (respects reduced motion)
     useFrame(({ camera, clock }) => {
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        if (!prefersReducedMotion) {
+        const hasReducedMotionClass = document.documentElement.classList.contains('reduced-motion')
+
+        if (!prefersReducedMotion && !hasReducedMotionClass) {
             camera.position.x = Math.cos(clock.elapsedTime * rotationSpeed.current) * 5
             camera.position.z = Math.sin(clock.elapsedTime * rotationSpeed.current) * 5
             camera.lookAt(0, 0, 0)

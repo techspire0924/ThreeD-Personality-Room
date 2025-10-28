@@ -37,7 +37,9 @@ export default function ProceduralProps() {
     useFrame(({ clock }) => {
         if (propsRef.current) {
             const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-            if (!prefersReducedMotion) {
+            const hasReducedMotionClass = document.documentElement.classList.contains('reduced-motion')
+
+            if (!prefersReducedMotion && !hasReducedMotionClass) {
                 propsRef.current.children.forEach((child, i) => {
                     const mesh = child as THREE.Mesh
                     const time = clock.elapsedTime
