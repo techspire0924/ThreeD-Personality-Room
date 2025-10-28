@@ -7,7 +7,7 @@
 
 import { Canvas } from '@react-three/fiber'
 import { Environment, OrbitControls, RoundedBox, Stats } from '@react-three/drei'
-import { useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import { type ReactNode } from 'react'
 
 interface SceneCanvasProps {
@@ -17,12 +17,18 @@ interface SceneCanvasProps {
 export default function SceneCanvas({ children }: SceneCanvasProps) {
     const perfMonitor = useRef(process.env.NODE_ENV === 'development')
 
+    // Clamp DPR on mobile for performance
+    const devicePixelRatio = typeof window !== 'undefined'
+        ? Math.min(window.devicePixelRatio || 1, 2)
+        : 1
+
     return (
         <Canvas
             camera={{ position: [5, 5, 5], fov: 50 }}
             gl={{ antialias: true, alpha: true }}
-            dpr={[0.5, 2]}
+            dpr={devicePixelRatio}
             performance={{ min: 0.8 }}
+            shadows
         >
             {perfMonitor.current && <Stats />}
 
