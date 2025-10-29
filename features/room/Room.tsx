@@ -43,17 +43,17 @@ export default function Room() {
         document.documentElement.style.setProperty('--light-tint', preset.lightTint)
     }, [vibe])
 
-    // Gentle camera auto-rotate when idle (respects reduced motion)
-    useFrame(({ camera, clock }) => {
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        const hasReducedMotionClass = document.documentElement.classList.contains('reduced-motion')
+    // Disabled camera auto-rotate to allow full manual control
+    // useFrame(({ camera, clock }) => {
+    //     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    //     const hasReducedMotionClass = document.documentElement.classList.contains('reduced-motion')
 
-        if (!prefersReducedMotion && !hasReducedMotionClass) {
-            camera.position.x = Math.cos(clock.elapsedTime * rotationSpeed.current) * 5
-            camera.position.z = Math.sin(clock.elapsedTime * rotationSpeed.current) * 5
-            camera.lookAt(0, 0, 0)
-        }
-    })
+    //     if (!prefersReducedMotion && !hasReducedMotionClass) {
+    //         camera.position.x = Math.cos(clock.elapsedTime * rotationSpeed.current) * 5
+    //         camera.position.z = Math.sin(clock.elapsedTime * rotationSpeed.current) * 5
+    //         camera.lookAt(0, 0, 0)
+    //     }
+    // })
 
     // Memoize materials for performance
     const wallMaterial = useMemo(() => (
@@ -94,6 +94,59 @@ export default function Room() {
                 <boxGeometry args={[10, 6, 10]} />
                 {wallMaterial}
             </mesh>
+
+            {/* Door on front wall */}
+            <mesh position={[-2, 1.5, -4.9]} receiveShadow>
+                <boxGeometry args={[1.2, 2.5, 0.2]} />
+                <meshStandardMaterial
+                    color={palette.primary}
+                    roughness={0.7}
+                    metalness={0.1}
+                />
+            </mesh>
+            {/* Door handle - positioned inside the door */}
+            <mesh position={[-1.3, 1.5, -4.8]} castShadow>
+                <sphereGeometry args={[0.05, 8, 6]} />
+                <meshStandardMaterial
+                    color={palette.accent}
+                    roughness={0.2}
+                    metalness={0.8}
+                />
+            </mesh>
+
+            {/* Window on front wall - solid frame only */}
+            <mesh position={[2.5, 2.5, -4.9]} receiveShadow>
+                <boxGeometry args={[1.6, 1.6, 0.1]} />
+                <meshStandardMaterial
+                    color={palette.accent}
+                    roughness={0.7}
+                    metalness={0.1}
+                />
+            </mesh>
+
+            {/* Corner furniture - Simple shelf */}
+            <group position={[-4.2, 1.5, -4.2]}>
+                {/* Shelf base */}
+                <mesh castShadow>
+                    <boxGeometry args={[0.8, 3, 0.8]} />
+                    <meshStandardMaterial
+                        color={palette.primary}
+                        roughness={0.7}
+                        metalness={0.1}
+                    />
+                </mesh>
+                {/* Shelf levels */}
+                {[0, 1, 2].map((i) => (
+                    <mesh key={i} position={[0, i - 0.5, 0]} castShadow>
+                        <boxGeometry args={[0.8, 0.05, 0.8]} />
+                        <meshStandardMaterial
+                            color={palette.accent}
+                            roughness={0.7}
+                            metalness={0.1}
+                        />
+                    </mesh>
+                ))}
+            </group>
 
             {/* Reflective floor with MeshReflectorMaterial */}
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
@@ -159,10 +212,7 @@ export default function Room() {
             {/* Mood-specific signature touches */}
             <MoodEffects />
 
-            {/* Decorative props */}
-            <RoomProps />
-
-            {/* Small decorative objects */}
+            {/* Random decorative objects */}
             <SmallObjects />
 
             {/* DUCK_MODE: Rubber duck easter egg */}
@@ -203,99 +253,8 @@ function Duck({ rotationSpeed, onClick }: { rotationSpeed: number; onClick: () =
     )
 }
 
-// Decorative room props component
-function RoomProps() {
-    const { palette, intensity, vibe } = useMoodStore()
-    const [lampOn, setLampOn] = useState(true)
-    const [plantWiggle, setPlantWiggle] = useState(0)
-
-    // Lamp click handler
-    const handleLampClick = () => {
-        setLampOn(!lampOn)
-    }
-
-    // Plant click handler
-    const handlePlantClick = () => {
-        setPlantWiggle(1)
-        setTimeout(() => setPlantWiggle(0), 500)
-    }
-
-    return (
-        <group>
-            {/* Chair */}
-            <mesh position={[-2, 0.4, 2]} castShadow>
-                <boxGeometry args={[0.8, 0.8, 0.8]} />
-                <meshStandardMaterial
-                    color={palette.primary}
-                    roughness={0.7}
-                    metalness={0.1}
-                />
-            </mesh>
-
-            {/* Desk */}
-            <mesh position={[2, 0.3, -1]} castShadow>
-                <boxGeometry args={[1.5, 0.6, 0.8]} />
-                <meshStandardMaterial
-                    color={palette.accent}
-                    roughness={0.6}
-                    metalness={0.2}
-                />
-            </mesh>
-
-            {/* Lamp */}
-            <group position={[2, 1.2, -1]}>
-                <mesh castShadow onClick={handleLampClick}>
-                    <cylinderGeometry args={[0.1, 0.1, 0.8]} />
-                    <meshStandardMaterial
-                        color={palette.primary}
-                        roughness={0.5}
-                        metalness={0.3}
-                    />
-                </mesh>
-                <mesh position={[0, 0.5, 0]} castShadow>
-                    <sphereGeometry args={[0.3, 8, 6]} />
-                    <meshStandardMaterial
-                        color={lampOn ? palette.accent : '#666'}
-                        emissive={lampOn ? palette.accent : '#000'}
-                        emissiveIntensity={lampOn ? 0.3 : 0}
-                    />
-                </mesh>
-            </group>
-
-            {/* Plant */}
-            <group position={[-3, 0.5, -2]}>
-                <mesh castShadow onClick={handlePlantClick}>
-                    <cylinderGeometry args={[0.2, 0.2, 0.4]} />
-                    <meshStandardMaterial
-                        color="#8B4513"
-                        roughness={0.8}
-                    />
-                </mesh>
-                <mesh
-                    position={[0, 0.6, 0]}
-                    rotation={[plantWiggle * 0.2, 0, 0]}
-                    castShadow
-                >
-                    <sphereGeometry args={[0.4, 8, 6]} />
-                    <meshStandardMaterial
-                        color={palette.primary}
-                        roughness={0.9}
-                    />
-                </mesh>
-            </group>
-
-            {/* Picture frame */}
-            <mesh position={[0, 2.5, -4.9]} castShadow>
-                <boxGeometry args={[1.5, 1, 0.1]} />
-                <meshStandardMaterial
-                    color={palette.accent}
-                    roughness={0.3}
-                    metalness={0.7}
-                />
-            </mesh>
-        </group>
-    )
-}
+// Decorative room props component - REMOVED
+// All objects are now randomly positioned via SmallObjects
 
 // Mood-specific signature effects
 function MoodEffects() {
@@ -435,32 +394,39 @@ function SmallObjects() {
     }, [vibe])
 
     const objects = useMemo(() => {
-        const objectTypes = [
-            { type: 'box' as const, size: [0.3, 0.4, 0.2] as [number, number, number] },
-            { type: 'box' as const, size: [0.3, 0.35, 0.2] as [number, number, number] },
-            { type: 'box' as const, size: [0.3, 0.45, 0.2] as [number, number, number] },
-            { type: 'cylinder' as const, size: [0.15, 0.15, 0.3] as [number, number, number] },
-            { type: 'sphere' as const, size: 0.15 },
-            { type: 'sphere' as const, size: 0.12 },
-            { type: 'sphere' as const, size: 0.1 },
-            { type: 'sphere' as const, size: 0.08 },
-            { type: 'sphere' as const, size: 0.1 },
-            { type: 'sphere' as const, size: 0.12 },
-            { type: 'box' as const, size: [0.4, 0.4, 0.4] as [number, number, number] },
-            { type: 'box' as const, size: [0.35, 0.35, 0.35] as [number, number, number] },
-            { type: 'box' as const, size: [0.4, 0.3, 0.3] as [number, number, number] },
-            { type: 'box' as const, size: [0.25, 0.3, 0.15] as [number, number, number] },
-            { type: 'cylinder' as const, size: [0.15, 0.15, 0.25] as [number, number, number] },
-            { type: 'cylinder' as const, size: [0.12, 0.12, 0.3] as [number, number, number] },
-            { type: 'sphere' as const, size: 0.15 },
-            { type: 'box' as const, size: [0.3, 0.25, 0.3] as [number, number, number] },
-            { type: 'cylinder' as const, size: [0.2, 0.2, 0.2] as [number, number, number] },
-            { type: 'sphere' as const, size: 0.1 },
-            { type: 'box' as const, size: [0.2, 0.2, 0.2] as [number, number, number] },
-            { type: 'cylinder' as const, size: [0.1, 0.1, 0.2] as [number, number, number] },
-            { type: 'sphere' as const, size: 0.12 },
-            { type: 'box' as const, size: [0.25, 0.25, 0.25] as [number, number, number] },
-        ]
+        const totalObjects = 30
+        const sphereCount = Math.floor(totalObjects * 0.6) // 60% spheres
+        const otherCount = totalObjects - sphereCount
+
+        const objectTypes = []
+
+        // Generate 60% spheres with wide size range
+        for (let i = 0; i < sphereCount; i++) {
+            const size = Math.random() * 0.4 + 0.05 // 0.05 to 0.45 (wide range)
+            objectTypes.push({ type: 'sphere' as const, size })
+        }
+
+        // Generate remaining 40% as boxes and cylinders
+        for (let i = 0; i < otherCount; i++) {
+            if (i % 2 === 0) {
+                // Box with random dimensions
+                const width = Math.random() * 0.3 + 0.1
+                const height = Math.random() * 0.3 + 0.1
+                const depth = Math.random() * 0.3 + 0.1
+                objectTypes.push({
+                    type: 'box' as const,
+                    size: [width, height, depth] as [number, number, number]
+                })
+            } else {
+                // Cylinder with random dimensions
+                const radius = Math.random() * 0.15 + 0.05
+                const height = Math.random() * 0.4 + 0.1
+                objectTypes.push({
+                    type: 'cylinder' as const,
+                    size: [radius, radius, height] as [number, number, number]
+                })
+            }
+        }
 
         // Generate completely random positions within room bounds
         return objectTypes.map((objTemplate, i) => {

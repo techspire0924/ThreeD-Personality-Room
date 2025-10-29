@@ -1,90 +1,125 @@
-# Mood Room
+# Mood Room - 3D Personality Space
 
-A 3D personality visualization experience built with Next.js, React Three Fiber, and Zustand.
+A Next.js application that creates personalized 3D rooms based on mood and personality. Built with React Three Fiber, Zustand, and Tailwind CSS.
+
+## Features
+
+- 🎨 **Interactive 3D Room**: Realistic room with floating objects
+- 🎭 **Mood-Driven Visuals**: Colors, lighting, and effects change with mood
+- 🎲 **Random Object Placement**: Objects spawn in random positions for each mood
+- 🖱️ **Smooth Navigation**: Mouse controls for camera movement
+- ♿ **Accessibility**: Keyboard shortcuts, reduced motion support
+- 📱 **Responsive**: Works on desktop and mobile
+- 🎯 **Easter Eggs**: Hidden duck and interactive elements
 
 ## Tech Stack
 
-- **Next.js 14** (App Router) - React framework
-- **React Three Fiber** - 3D rendering
-- **Zustand** - State management
-- **Tailwind CSS** - Styling
-- **TypeScript** - Type safety
-- **Vitest** - Unit testing
-- **Playwright** - E2E testing
+- **Next.js 14** (App Router)
+- **React Three Fiber** (3D rendering)
+- **Drei** (R3F helpers)
+- **Zustand** (State management)
+- **Tailwind CSS** (Styling)
+- **TypeScript** (Type safety)
 
-## Getting Started
+## Deployment to Netlify
+
+### Method 1: Git-based Deployment (Recommended)
+
+1. **Push to GitHub/GitLab**:
+   ```bash
+   git add .
+   git commit -m "Ready for Netlify deployment"
+   git push origin main
+   ```
+
+2. **Connect to Netlify**:
+   - Go to [netlify.com](https://netlify.com)
+   - Click "New site from Git"
+   - Connect your repository
+   - Netlify will automatically detect the settings from `netlify.toml`
+
+3. **Deploy**:
+   - Netlify will build and deploy automatically
+   - Your site will be available at `https://your-site-name.netlify.app`
+
+### Method 2: Drag & Drop Deployment
+
+1. **Build locally**:
+   ```bash
+   npm run build
+   ```
+
+2. **Upload to Netlify**:
+   - Go to [netlify.com](https://netlify.com)
+   - Drag the `out` folder to the deploy area
+   - Your site will be live instantly
+
+### Method 3: Netlify CLI
+
+1. **Install Netlify CLI**:
+   ```bash
+   npm install -g netlify-cli
+   ```
+
+2. **Login and deploy**:
+   ```bash
+   netlify login
+   netlify deploy --prod --dir=out
+   ```
+
+## Local Development
 
 ```bash
 # Install dependencies
 npm install
 
-# Run development server
+# Start development server
 npm run dev
 
-# Run tests
-npm test
+# Build for production
+npm run build
 
-# Run E2E tests
-npm run test:e2e
+# Preview production build
+npm run start
 ```
 
 ## Project Structure
 
 ```
 ├── app/
-│   ├── (marketing)/
-│   │   └── page.tsx          # Landing page
-│   ├── configurator/
-│   │   └── page.tsx           # Main 3D configurator
-│   └── layout.tsx
+│   ├── (marketing)/page.tsx     # Landing page
+│   ├── configurator/page.tsx    # Main 3D room
+│   └── layout.tsx               # Root layout
 ├── components/
-│   └── canvas/
-│       └── SceneCanvas.tsx    # R3F Canvas wrapper
+│   └── canvas/SceneCanvas.tsx   # R3F Canvas wrapper
 ├── features/
-│   ├── mood/
-│   │   ├── useMoodStore.ts    # Zustand store
-│   │   └── moodPresets.ts     # Preset configurations
-│   ├── room/
-│   │   ├── Room.tsx           # Room geometry
-│   │   └── ProceduralProps.tsx # Procedural decorations
-│   └── ui/
-│       ├── MoodQuiz.tsx       # Quiz component
-│       └── Toolbar.tsx        # Mood selection UI
-├── lib/
-│   ├── urlState.ts            # URL syncing
-│   ├── analytics.ts           # Event tracking (stub)
-│   └── a11y.ts                # Accessibility helpers
-└── styles/
-    └── globals.css            # Global styles
+│   ├── mood/                    # Mood state management
+│   ├── room/                    # 3D room components
+│   └── ui/                      # UI components
+├── styles/
+│   └── globals.css              # Global styles
+├── netlify.toml                 # Netlify configuration
+└── next.config.js               # Next.js configuration
 ```
 
-## Features
+## Environment Variables
 
-- **3D Visualization**: Interactive 3D room that reflects your mood
-- **Mood Presets**: Switch between different atmospheres (Serene, Energetic, Focused, Cozy, Creative)
-- **Interactive Quiz**: Discover your ideal mood through guided questions
-- **Keyboard Accessible**: Full keyboard navigation support
-- **URL Sharing**: Share your mood configuration via URL (TODO: to be connected)
-- **Performance**: Lazy-loading and suspense boundaries for optimized 3D rendering
+No environment variables required for basic functionality.
 
-## Code Style
+## Performance Notes
 
-- TypeScript strict mode
-- Functional React components with hooks
-- RSC-friendly (server components by default, client components where needed)
-- Accessibility-first (keyboard navigation, ARIA attributes)
-- Performance-conscious (lazy-loading, suspense boundaries)
-- Minimal working code over placeholders
-- "Thought Logic" comments explaining why, not what
+- Static export for optimal Netlify performance
+- Optimized 3D assets and low-poly geometry
+- Mobile-friendly DPR clamping
+- Reduced motion support for accessibility
 
-## Next Steps (TODOs)
+## Browser Support
 
-- [ ] Connect URL state sync in useMoodStore
-- [ ] Implement Sentry integration in analytics.ts
-- [ ] Add error boundaries
-- [ ] Create Playwright E2E tests
-- [ ] Add KTX2/Draco compression for 3D assets
-- [ ] Implement custom mood creation
-- [ ] Add room decorator props
-- [ ] Implement fog and atmosphere effects
+- Chrome/Edge (recommended)
+- Firefox
+- Safari
+- Mobile browsers (iOS Safari, Chrome Mobile)
 
+## License
+
+MIT License - feel free to use this project for learning and inspiration!

@@ -77,14 +77,36 @@ export default function Toolbar() {
         setIntensity(Math.random())
     }
 
-    const handleScreenshot = () => {
-        const canvas = document.querySelector('canvas') as HTMLCanvasElement
-        if (canvas) {
-            const dataURL = canvas.toDataURL('image/png')
-            const link = document.createElement('a')
-            link.download = `mood-room-${vibe.toLowerCase()}.png`
-            link.href = dataURL
-            link.click()
+    const handleScreenshot = async () => {
+        try {
+            // Use the global screenshot function from ScreenshotCapture
+            const captureScreenshot = (window as any).captureScreenshot
+            if (captureScreenshot) {
+                const dataURL = await captureScreenshot()
+                const link = document.createElement('a')
+                link.download = `mood-room-${vibe.toLowerCase()}-${Date.now()}.png`
+                link.href = dataURL
+                link.click()
+                console.log('Screenshot saved successfully')
+            } else {
+                throw new Error('Screenshot function not available')
+            }
+        } catch (error) {
+            console.error('Screenshot failed:', error)
+            // Fallback: try the simple method
+            const canvas = document.querySelector('canvas') as HTMLCanvasElement
+            if (canvas) {
+                try {
+                    const dataURL = canvas.toDataURL('image/png')
+                    const link = document.createElement('a')
+                    link.download = `mood-room-${vibe.toLowerCase()}-fallback.png`
+                    link.href = dataURL
+                    link.click()
+                } catch (fallbackError) {
+                    console.error('Fallback screenshot also failed:', fallbackError)
+                    alert('Screenshot failed. Please try again.')
+                }
+            }
         }
     }
 

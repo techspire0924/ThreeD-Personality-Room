@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import '../styles/globals.css'
+import { ErrorBoundary } from '../components/ErrorBoundary'
 
 export const metadata: Metadata = {
     title: 'Mood Room - 3D Personality Configurator',
@@ -13,7 +14,11 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className="antialiased">{children}</body>
+            <body className="antialiased">
+                <ErrorBoundary>
+                    {children}
+                </ErrorBoundary>
+            </body>
         </html>
     )
 }

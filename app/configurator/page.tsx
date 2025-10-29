@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic'
 import SceneCanvas from '@/components/canvas/SceneCanvas'
 import Toolbar from '@/features/ui/Toolbar'
 import MoodQuiz from '@/features/ui/MoodQuiz'
+import NavigationHelp from '@/components/NavigationHelp'
 
 const Room = dynamic(() => import('@/features/room/Room'), {
     ssr: false,
@@ -31,6 +32,7 @@ function StaticRoomFallback() {
 export default function ConfiguratorPage() {
     return (
         <div className="h-screen bg-gray-900 overflow-hidden">
+            <NavigationHelp />
             <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
                 {/* Left: 3D Scene */}
                 <div className="relative w-full h-full bg-gray-950">
